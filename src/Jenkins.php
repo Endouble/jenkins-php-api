@@ -269,13 +269,19 @@ class Jenkins
 
     /**
      * @param string $jobName
+     * @param string $folder
      *
      * @return bool|\JenkinsKhan\Jenkins\Job
      * @throws \RuntimeException
      */
-    public function getJob($jobName)
+    public function getJob($jobName, $folder = null)
     {
-        $url  = sprintf('%s/job/%s/api/json', $this->baseUrl, $jobName);
+
+        if ($folder !== null) {
+            $url = sprintf('%s/job/%s/job/%s/api/json', $this->baseUrl, $folder, $jobName);
+        } else {
+            $url = sprintf('%s/job/%s/api/json', $this->baseUrl, $jobName);
+        }
         $curl = curl_init($url);
 
         curl_setopt($curl, \CURLOPT_RETURNTRANSFER, 1);

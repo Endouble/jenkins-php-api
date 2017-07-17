@@ -1,9 +1,9 @@
 {
-  "name": "jenkins-khan/jenkins-api",
+  "name": "Endouble/jenkins-php-api",
   "type": "library",
-  "description": "Jenkins PHP API",
+  "description": "Jenkins PHP API with Folder support",
   "keywords": ["jenkins", "api"],
-  "homepage": "https://github.com/jenkins-khan/jenkins-php-api",
+  "homepage": "https://github.com/Endouble/jenkins-php-api",
   "license": "MIT",
   "autoload": {
     "psr-4": {
@@ -20,6 +20,10 @@
     {
       "name": "jenkins-khan",
       "homepage": "https://github.com/jenkins-khan/jenkins-php-api"
+    },
+    {
+      "name": "kvdnberg",
+      "homepage": "https://github.com/Endouble/"
     }
   ]
 }
