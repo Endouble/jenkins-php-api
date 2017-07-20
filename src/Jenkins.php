@@ -5,6 +5,7 @@ namespace JenkinsKhan;
 class Jenkins
 {
 
+    const FOLDER_URL_FORMAT = '%s/job/%s%s';
     /**
      * @var string
      */
@@ -276,12 +277,8 @@ class Jenkins
      */
     public function getJob($jobName, $folder = null)
     {
+        $url = $this->getUrlForPath(sprintf('/job/%s/api/json', $jobName), $folder);
 
-        if ($folder !== null) {
-            $url = sprintf('%s/job/%s/job/%s/api/json', $this->baseUrl, $folder, $jobName);
-        } else {
-            $url = sprintf('%s/job/%s/api/json', $this->baseUrl, $jobName);
-        }
         $curl = curl_init($url);
 
         curl_setopt($curl, \CURLOPT_RETURNTRANSFER, 1);
@@ -303,7 +300,7 @@ class Jenkins
             throw new \RuntimeException('Error during json_decode');
         }
 
-        return new Jenkins\Job($infos, $this);
+        return new Jenkins\Job($infos, $this, $folder);
     }
 
     /**
@@ -416,17 +413,20 @@ class Jenkins
     /**
      * @param        $job
      * @param        $buildId
+     * @param string $folder
      * @param string $tree
      *
      * @return Jenkins\Build
      * @throws \RuntimeException
      */
-    public function getBuild($job, $buildId, $tree = 'actions[parameters,parameters[name,value]],result,duration,timestamp,number,url,estimatedDuration,builtOn')
+    public function getBuild($job, $buildId, $folder = null, $tree = 'actions[parameters,parameters[name,value]],result,duration,timestamp,number,url,estimatedDuration,builtOn')
     {
         if ($tree !== null) {
             $tree = sprintf('?tree=%s', $tree);
         }
-        $url  = sprintf('%s/job/%s/%d/api/json%s', $this->baseUrl, $job, $buildId, $tree);
+
+
+        $url  = $this->getUrlForPath(sprintf('/job/%s/%d/api/json%s', $job, $buildId, $tree), $folder);
         $curl = curl_init($url);
 
         curl_setopt($curl, \CURLOPT_RETURNTRANSFER, 1);
@@ -842,5 +842,19 @@ class Jenkins
         if ($info['http_code'] === 403) {
             throw new \RuntimeException(sprintf('Access Denied [HTTP status code 403] to %s"', $info['url']));
         }
+    }
+
+    /**
+     * @param $path
+     * @param null $folder
+     * @return string
+     */
+    private function getUrlForPath($path, $folder = null)
+    {
+        if ($folder === null) {
+            return sprintf('%s%s', $this->baseUrl, $path);
+        }
+
+        return sprintf(self::FOLDER_URL_FORMAT, $this->baseUrl, $folder, $path);
     }
 }

@@ -12,6 +12,12 @@ class Job
      */
     private $job;
 
+
+    /**
+     * @var string
+     */
+    private $folder;
+
     /**
      * @var Jenkins
      */
@@ -21,11 +27,12 @@ class Job
      * @param \stdClass $job
      * @param Jenkins   $jenkins
      */
-    public function __construct($job, Jenkins $jenkins)
+    public function __construct($job, Jenkins $jenkins, $folder = null)
     {
         $this->job = $job;
 
         $this->setJenkins($jenkins);
+        $this->folder = $folder;
     }
 
     /**
@@ -50,7 +57,7 @@ class Job
      */
     public function getJenkinsBuild($buildId)
     {
-        return $this->getJenkins()->getBuild($this->getName(), $buildId);
+        return $this->getJenkins()->getBuild($this->getName(), $buildId, $this->folder);
     }
 
     /**
@@ -153,7 +160,7 @@ class Job
             return null;
         }
 
-        return $this->getJenkins()->getBuild($this->getName(), $this->job->lastSuccessfulBuild->number);
+        return $this->getJenkins()->getBuild($this->getName(), $this->job->lastSuccessfulBuild->number, $this->folder);
     }
 
     /**
@@ -165,6 +172,6 @@ class Job
             return null;
         }
 
-        return $this->getJenkins()->getBuild($this->getName(), $this->job->lastBuild->number);
+        return $this->getJenkins()->getBuild($this->getName(), $this->job->lastBuild->number, $this->folder);
     }
 }
