@@ -64,12 +64,17 @@ class Build
     public function getInputParameters()
     {
         $parameters = array();
+        $inputParameters = array();
 
-        if (!property_exists($this->build->actions[0], 'parameters')) {
-            return $parameters;
+        foreach ($this->build->actions as $action) {
+            if (!property_exists($action, 'parameters')) {
+                continue;
+            }
+
+            $inputParameters = $action->parameters;
         }
 
-        foreach ($this->build->actions[0]->parameters as $parameter) {
+        foreach ($inputParameters as $parameter) {
             $parameters[$parameter->name] = $parameter->value;
         }
 
@@ -82,7 +87,7 @@ class Build
     public function getTimestamp()
     {
         //division par 1000 => pas de millisecondes
-        return $this->build->timestamp / 1000;
+        return (int) round($this->build->timestamp / 1000);
     }
 
 
@@ -236,7 +241,7 @@ class Build
     /**
      * @param Jenkins $jenkins
      *
-     * @return Job
+     * @return Build
      */
     public function setJenkins(Jenkins $jenkins)
     {
